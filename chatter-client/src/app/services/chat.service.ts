@@ -34,30 +34,30 @@ export class ChatService {
           });
     }
 
-  public subscribeToChatMessages(_chatId: string) : Observable<any> {
+  public leaveChat(_chatId: string, _memberId: string): Observable<any> {
+    return new Observable((observer) => {
+                let url = 'http://localhost:8080/chats/' + _chatId + '/members/' + _memberId;
+                let requestHeaders = {
+                  'Content-Type': 'application/json'
+                };
+                let httpMethod = 'DELETE';
+
+                let request = {
+                  headers: requestHeaders,
+                  method: httpMethod
+                };
+
+                let source = new SSE(url, request);
+                source.onmessage = (event) => {
+                  observer.next(JSON.parse(event.data));
+                }
+                source.stream();
+              });
+  }
+
+  public subscribeToChat(_chatId: string): Observable<any> {
       return new Observable((observer) => {
-            let url = 'http://localhost:8080//chats/' + _chatId + '/messages/subscribe';
-            let requestHeaders = {
-              'Content-Type': 'application/json'
-            };
-            let httpMethod = 'GET';
-
-            let request = {
-              headers: requestHeaders,
-              method: httpMethod
-            };
-
-            let source = new SSE(url, request);
-            source.onmessage = (event) => {
-              observer.next(JSON.parse(event.data));
-            }
-            source.stream();
-          });
-    }
-
-  public subscribeToChatMembers(_chatId: string) : Observable<any> {
-      return new Observable((observer) => {
-            let url = 'http://localhost:8080/chats/' + _chatId + '/members/subscribe';
+            let url = 'http://localhost:8080/chats/' + _chatId + '/subscribe';
             let requestHeaders = {
               'Content-Type': 'application/json'
             };

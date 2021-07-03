@@ -1,7 +1,6 @@
 package com.jg.chatter.dto;
 
 import lombok.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 import java.util.ArrayList;
@@ -25,18 +24,10 @@ public class ChatDto {
 
     @Builder.Default
     @Getter(AccessLevel.PRIVATE)
-    private Sinks.Many<MessageDto> messagesSink = Sinks.many().multicast().directAllOrNothing();
+    private Sinks.Many<ChatEventDto> eventSink = Sinks.many().replay().all();
 
-    @Builder.Default
-    @Getter(AccessLevel.PRIVATE)
-    private Sinks.Many<UserDto> membersSink = Sinks.many().multicast().directAllOrNothing();
-
-    public Sinks.Many<MessageDto> messagesSink() {
-        return this.messagesSink;
-    }
-
-    public Sinks.Many<UserDto> membersSink() {
-        return this.membersSink;
+    public Sinks.Many<ChatEventDto> eventSink() {
+        return this.eventSink;
     }
 
 }

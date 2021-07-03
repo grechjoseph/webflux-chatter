@@ -75,3 +75,19 @@ td {
   color: grey;
   text-align: right;
 }
+
+.memberJoinedContainer {
+  width: 100%;
+  text-align: center;
+  margin: 15px 0px 15px 0px;
+}
+
+.memberJoinedContainer>.memberNickname {
+  font-size: 15px;
+  color: grey;
+}
+
+.memberJoinedContainer>.memberJoinDate {
+  font-size: 11px;
+  color: grey;
+}

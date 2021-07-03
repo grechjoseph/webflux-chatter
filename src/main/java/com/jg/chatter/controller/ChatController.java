@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.jg.chatter.dto.ChatEventType.*;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -35,13 +36,20 @@ public class ChatController {
                 .findFirst()
                 .map(existingChat -> {
                     existingChat.getMembers().add(user);
-                    existingChat.membersSink().tryEmitNext(user);
+                    existingChat.eventSink().tryEmitNext(ChatEventDto.builder()
+                            .type(MEMBER)
+                            .payload(user)
+                            .build());
                     return existingChat;
                 })
                 .orElseGet(() -> {
                     final ChatDto newChat = ChatDto.builder()
                             .build();
                     newChat.getMembers().add(user);
+                    newChat.eventSink().tryEmitNext(ChatEventDto.builder()
+                            .type(MEMBER)
+                            .payload(user)
+                            .build());
                     chats.add(newChat);
                     return newChat;
                 });
@@ -55,8 +63,8 @@ public class ChatController {
 
     }
 
-    @GetMapping(value = "/chats/{chatId}/messages/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<MessageDto> subscribeToChatMessages(@PathVariable final UUID chatId) {
+    @GetMapping(value = "/chats/{chatId}/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ChatEventDto> subscribeToChat(@PathVariable final UUID chatId) {
         final SubscribeToChatMessagesRequest request = SubscribeToChatMessagesRequest.builder()
                 .chatId(chatId)
                 .build();
@@ -70,20 +78,8 @@ public class ChatController {
                 .findFirst()
                 .map(chat -> {
                     log.debug("Mapping chat to flux.");
-                    return chat.messagesSink().asFlux();
+                    return chat.eventSink().asFlux();
                 })
-                .orElseThrow(() -> new RuntimeException("Chat Not Found with ID: " + request.getChatId()));
-    }
-
-    @GetMapping(value = "/chats/{chatId}/members/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<UserDto> subscribeToChatMembers(@PathVariable final UUID chatId) {
-        final SubscribeToChatMembersRequest request = SubscribeToChatMembersRequest.builder()
-                .chatId(chatId)
-                .build();
-        return chats.stream()
-                .filter(chat -> chat.getId().equals(request.getChatId()))
-                .findFirst()
-                .map(chat -> chat.membersSink().asFlux())
                 .orElseThrow(() -> new RuntimeException("Chat Not Found with ID: " + request.getChatId()));
     }
 
@@ -100,7 +96,29 @@ public class ChatController {
                             .message(request.getMessage())
                             .build();
                     chat.getMessages().add(message);
-                    chat.messagesSink().tryEmitNext(message);
+                    chat.eventSink().tryEmitNext(ChatEventDto.builder()
+                            .type(MESSAGE)
+                            .payload(message)
+                            .build());
+                });
+    }
+
+    @DeleteMapping("/chats/{chatId}/members/{memberId}")
+    public void removeMemberFromChat(@PathVariable final UUID chatId, @PathVariable final UUID memberId) {
+        chats.stream()
+                .filter(chat -> chat.getId().equals(chatId))
+                .findFirst()
+                .ifPresent(chat -> {
+                    chat.getMembers().stream()
+                            .filter(member -> member.getId().equals(memberId))
+                            .findFirst()
+                            .ifPresent(member -> {
+                                chat.getMembers().remove(member);
+                                chat.eventSink().tryEmitNext(ChatEventDto.builder()
+                                        .type(LEFT_CHAT)
+                                        .payload(member)
+                                        .build());
+                            });
                 });
     }
 

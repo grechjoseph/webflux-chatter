@@ -11,80 +11,40 @@ import { ChatService } from './services/chat.service';
 export class AppComponent implements OnInit {
 
   title = 'app';
-
-  constructor(private chatService: ChatService, private datePipe: DatePipe, private changeDetectorRef: ChangeDetectorRef) { }
-
   userId: string;
   chatId: string;
-  members: any[] = [];
-  messages: any[] = [];
-
-  messagesSubscription: any;
-  membersSubscription: any;
-
-  /** Scroll **/
-  ngOnInit() {
-      this.scrollToBottom();
-  }
+  events: any[] = [];
+  eventsSubscription: any;
 
   @ViewChild('messagesContainer') private myScrollContainer: ElementRef;
   @ViewChild('txtCompose') private txtCompose: ElementRef;
 
-  scrollToBottom(): void {
-      // Wait for template to update.
-      this.changeDetectorRef.detectChanges();
-      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight
+  constructor(private chatService: ChatService, private datePipe: DatePipe, private changeDetectorRef: ChangeDetectorRef) { }
+
+  ngOnInit() {
   }
 
+  /** Server Access **/
+
   public startOrJoinChat(_chatId: string, _nickname: string) {
-    if (this.messagesSubscription) {
-      this.messagesSubscription.unsubscribe();
-    }
-
-    if (this.membersSubscription) {
-      this.membersSubscription.unsubscribe();
-    }
-
-    this.userId = null;
-    this.chatId = null;
-    this.members = [];
-    this.messages = [];
-
-    // Start or Join Chat
+    this.resetFields();
     this.chatService.startOrJoinChat(_chatId, _nickname)
       .subscribe(chatInfo => {
         this.userId = chatInfo.userId;
         console.log('MemberId: ' + this.userId);
         this.chatId = chatInfo.chat.id;
         console.log('ChatId: ' + this.chatId);
-        this.members = chatInfo.chat.members;
-        this.messages = chatInfo.chat.messages;
         this.scrollToBottom();
 
         // Subscribe to chat messages
-        this.messagesSubscription = this.chatService.subscribeToChatMessages(this.chatId)
-          .subscribe(message => {
-            console.log(message);
-            this.messages.push(message);
+        this.eventsSubscription = this.chatService.subscribeToChat(this.chatId)
+          .subscribe(event => {
+            console.log(event);
+            this.events.push(event);
             this.scrollToBottom();
           });
         console.log("Subscribed to Chat messages.");
-
-        // Subscribe to chat members
-        this.membersSubscription = this.chatService.subscribeToChatMembers(this.chatId)
-          .subscribe(member => {
-            console.log(member);
-            this.members.push(member);
-          });
-        console.log("Subscribed to Chat members.");
       });
-  }
-
-  public addMessageToView(_message: any) {
-  }
-
-  public onKeydown(event){
-    event.preventDefault();
   }
 
   public sendMessage(_message: string) {
@@ -92,8 +52,41 @@ export class AppComponent implements OnInit {
     this.txtCompose.nativeElement.value = '';
   }
 
+  public leaveChat() {
+    this.chatService.leaveChat(this.chatId, this.userId).subscribe();
+    this.resetFields();
+  }
+
+  resetFields() {
+    if (this.eventsSubscription) {
+      this.eventsSubscription.unsubscribe();
+    }
+
+    this.userId = null;
+    this.chatId = null;
+    this.events = [];
+  }
+
+  /** UX **/
+
+  public onKeydown(event){
+    event.preventDefault();
+  }
+
+  public scrollToBottom(): void {
+      // Wait for template to update.
+      this.changeDetectorRef.detectChanges();
+      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight
+  }
+
+  public didNotLeave(userId: string) {
+    return this.events.find(event => event.type === 'LEFT_CHAT' && event.payload.id === userId) == null;
+  }
+
+  /** Utils **/
+
   public getNicknameByMemberId(_memberId): string {
-    return this.members.find(member => member.id === _memberId).nickname;
+    return this.events.find(event => event.type === 'MEMBER' && event.payload.id === _memberId).payload.nickname;
   }
 
   public formatDateTime(_dateTime): any {
