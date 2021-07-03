@@ -1,0 +1,51 @@
+
+
+<h1>Chatter</h1>
+<table>
+  <ng-container *ngIf="chatId">
+    <tr>
+      ChatId:
+      <input #txtChatId type="text" value="{{chatId}}" class="txt" />
+    </tr>
+  </ng-container>
+  <tr class="trMenu">
+    <td>
+      <input #txtNickname type="text" name="txtNickname" placeholder="Nickname" class="txt" />
+      <input #txtChatId type="text" name="txtChatId" placeholder="Chat ID (Leave blank to start a new chat)" class="txt" />
+      <input type="button" name="btnStartJoin" value="Start/Join Chat" class="btn"
+            (click)="startOrJoinChat(txtChatId.value, txtNickname.value)"
+            (touchend)="startOrJoinChat(txtChatId.value, txtNickname.value)"/>
+      <input type="button" name="btnLeave" value="Leave Chat" class="btn" />
+    </td>
+  </tr>
+  <tr class="trMessages">
+    <td>
+      <div #messagesContainer class="messagesContainer">
+          <div *ngFor="let message of messages" class="messageContainer"
+             [ngClass]="{'right' : userId == message.senderId, 'left' : userId != message.senderId}" >
+            <div class="sender">
+              {{getNicknameByMemberId(message.senderId)}}
+            </div>
+            <div class="message">
+              {{message.message}}
+            </div>
+            <div class="datetime">
+              {{formatDateTime(message.dateTime)}}
+            </div>
+          </div>
+      </div>
+      <div #membersContainer class="membersContainer">
+        <div style="margin: 10px 0px 0px 10px;">Chat Members:</div>
+        <hr/>
+        <div *ngFor="let member of members" style="margin: 10px 0px 0px 10px;">
+          {{member.nickname}}
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr class="trCompose">
+    <td>
+      <textarea #txtCompose class="txtCompose" name="txtCompose" (keydown.enter)="onKeydown($event)" (keyup.enter)="sendMessage(txtCompose.value)"></textarea>
+    </td>
+  </tr>
+</table>
