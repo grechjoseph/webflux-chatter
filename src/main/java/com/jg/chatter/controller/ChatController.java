@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -14,13 +13,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.jg.chatter.dto.ChatEventType.*;
+import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 import static java.util.Objects.nonNull;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @CrossOrigin("*")
-@EnableAsync
+@RequiredArgsConstructor
 public class ChatController {
 
     private final Set<ChatDto> chats = new HashSet<>();
@@ -35,6 +34,7 @@ public class ChatController {
                 .filter(c -> nonNull(request.getChatId()) && c.getId().equals(request.getChatId()))
                 .findFirst()
                 .map(existingChat -> {
+                    // Chat exists. Return existing chat.
                     existingChat.getMembers().add(user);
                     existingChat.eventSink().tryEmitNext(ChatEventDto.builder()
                             .type(MEMBER)
@@ -43,6 +43,7 @@ public class ChatController {
                     return existingChat;
                 })
                 .orElseGet(() -> {
+                    // Chat does not exist. Create new chat, and return it.
                     final ChatDto newChat = ChatDto.builder()
                             .build();
                     newChat.getMembers().add(user);
@@ -69,22 +70,19 @@ public class ChatController {
                 .chatId(chatId)
                 .build();
 
-        log.debug("Finding chat to fetch flux from.");
         return chats.stream()
-                .filter(chat -> {
-                    log.debug("Finding chat by ID.");
-                    return chat.getId().equals(request.getChatId());
-                })
+                .filter(chat -> chat.getId().equals(request.getChatId()))
                 .findFirst()
-                .map(chat -> {
-                    log.debug("Mapping chat to flux.");
-                    return chat.eventSink().asFlux();
-                })
+                .map(chat -> chat.eventSink().asFlux())
                 .orElseThrow(() -> new RuntimeException("Chat Not Found with ID: " + request.getChatId()));
     }
 
     @PostMapping("/chats/{chatId}")
     public void postMessageToChat(@RequestBody final PostMessageRequest request, @PathVariable final UUID chatId) {
+        if (isNullOrEmpty(request.getMessage())) {
+            return;
+        }
+
         request.setChatId(chatId);
 
         chats.stream()

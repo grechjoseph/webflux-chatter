@@ -31,19 +31,15 @@ export class AppComponent implements OnInit {
     this.chatService.startOrJoinChat(_chatId, _nickname)
       .subscribe(chatInfo => {
         this.userId = chatInfo.userId;
-        console.log('MemberId: ' + this.userId);
         this.chatId = chatInfo.chat.id;
-        console.log('ChatId: ' + this.chatId);
         this.scrollToBottom();
 
-        // Subscribe to chat messages
         this.eventsSubscription = this.chatService.subscribeToChat(this.chatId)
           .subscribe(event => {
             console.log(event);
             this.events.push(event);
             this.scrollToBottom();
           });
-        console.log("Subscribed to Chat messages.");
       });
   }
 
@@ -53,7 +49,9 @@ export class AppComponent implements OnInit {
   }
 
   public leaveChat() {
-    this.chatService.leaveChat(this.chatId, this.userId).subscribe();
+    if (this.chatId && this.userId) {
+      this.chatService.leaveChat(this.chatId, this.userId).subscribe();
+    }
     this.resetFields();
   }
 
@@ -69,7 +67,7 @@ export class AppComponent implements OnInit {
 
   /** UX **/
 
-  public onKeydown(event){
+  public preventDefault(event){
     event.preventDefault();
   }
 
@@ -89,9 +87,13 @@ export class AppComponent implements OnInit {
     return this.events.find(event => event.type === 'MEMBER' && event.payload.id === _memberId).payload.nickname;
   }
 
-  public formatDateTime(_dateTime): any {
+  public formatDateTime(_dateTime): string {
     let date = new Date(_dateTime);
     return this.datePipe.transform(date,"dd-MM-yyyy HH:mm");
+  }
+
+  public parseMessage(_message: string): string {
+    return _message;
   }
 
 }
