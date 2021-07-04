@@ -36,13 +36,13 @@
 
   <tr>
     <td colspan="4">
-      <div class="button newChat" (click)="startChat(nickname.value)">New Chat</div>
+      <div class="button newChat" (click)="startChat(nickname.value)">New</div>
     </td>
     <td colspan="4">
-      <div class="button joinChat" (click)="joinChat(chatId.value, nickname.value)">Join Chat</div>
+      <div class="button joinChat" (click)="joinChat(chatId.value, nickname.value)">Join</div>
     </td>
     <td colspan="4">
-      <div class="button leaveChat" (click)="leaveChat()">Leave Chat</div>
+      <div class="button leaveChat" (click)="leaveChat()">Leave</div>
     </td>
   </tr>
 
@@ -81,7 +81,7 @@
     </td>
     <td colspan="2">
       <div #membersContainer class="membersContainer">
-        <div class="chatMembersHeader">Chat Members:</div>
+        <div class="chatMembersHeader">Members:</div>
         <hr/>
         <div *ngFor="let event of events" class="chatMemberContainer">
           <div *ngIf="event.type == 'MEMBER' && didNotLeave(event.payload.id)">
