@@ -26,6 +26,10 @@ public class ChatController {
 
     @PostMapping("/start")
     public ResponseEntity<StartOrJoinChatResponseDto> startChat(@RequestBody final StartChatRequest request) {
+        if (isNullOrEmpty(request.getNickname())) {
+            throw new RuntimeException("Nickname required.");
+        }
+
         final UserDto user = UserDto.builder()
                 .nickname(request.getNickname())
                 .build();

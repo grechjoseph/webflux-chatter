@@ -8,7 +8,7 @@ import { PostMessageRequest } from '../models/post-message-request.model';
 @Injectable()
 export class ChatService {
 
-  baseUrl: string = 'http://localhost:8080';
+  baseUrl: string = 'https://dee11af7551c.ngrok.io';
 
   constructor() { }
 

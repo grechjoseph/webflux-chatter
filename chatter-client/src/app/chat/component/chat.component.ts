@@ -26,7 +26,15 @@ export class ChatComponent implements OnInit {
 
     /** Server Access **/
 
-    public startOrJoinChat(_chatId: string, _nickname: string) {
+    public startChat(_nickname: string) {
+      this.startOrJoinChat(null, _nickname);
+    }
+
+    public joinChat(_chatId: string, _nickname: string) {
+      this.startOrJoinChat(_chatId, _nickname);
+    }
+
+    startOrJoinChat(_chatId: string, _nickname: string) {
       this.leaveChat();
       this.resetFields();
       this.chatService.startOrJoinChat(_chatId, _nickname)
@@ -83,6 +91,13 @@ export class ChatComponent implements OnInit {
 
     public parseMessage(_message: string): string {
       return _message;
+    }
+
+    public formatChatId() {
+      if (this.chatId) {
+        return this.chatId;
+      }
+      return '';
     }
 
     /** UX **/

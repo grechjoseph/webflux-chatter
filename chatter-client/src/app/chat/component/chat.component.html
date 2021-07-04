@@ -1,25 +1,53 @@
-<h1>Chatter</h1>
-<table (window:beforeunload)="leaveChat()">
-  <ng-container *ngIf="chatId">
-    <tr>
-      ChatId:
-      <input #txtChatId type="text" value="{{chatId}}" class="txt" />
-      <button (click)="copyToClipboard(txtChatId)" value="Copy" >Copy</button>
-    </tr>
-  </ng-container>
-  <tr class="trMenu">
-    <td>
-      <form (submit)="preventDefault($event)">
-        <input #txtNickname type="text" name="txtNickname" placeholder="Nickname" class="txt" />
-        <input #txtChatId type="text" name="txtChatId" placeholder="Chat ID (Leave blank to start a new chat)" class="txt" />
-        <input type="submit" name="btnStartJoin" value="Start/Join Chat" class="btn"
-               (click)="startOrJoinChat(txtChatId.value, txtNickname.value)" />
-        <input type="button" name="btnLeave" value="Leave Chat" class="btn" (click)="leaveChat()" />
-      </form>
+<table (window:beforeunload)="leaveChat()" class="chatContainer">
+  <tr>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+    <td width="8.33%"></td>
+  </tr>
+
+  <tr>
+    <td colspan="12">
+      <h1>Chatter</h1>
     </td>
   </tr>
-  <tr class="trMessages">
-    <td>
+
+  <tr>
+    <td colspan="12">
+      <input type="text" #nickname class="nickname" placeholder="Nickname"/>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="10">
+      <input type="text" #chatId class="chatId" placeholder="Chat ID (for joining)" value="{{formatChatId()}}"/>
+    </td>
+    <td colspan="2">
+      <button (click)="copyToClipboard(chatId)" value="Copy" class="copyChatId">Copy</button>
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan="4">
+      <div class="button newChat" (click)="startChat(nickname.value)">New Chat</div>
+    </td>
+    <td colspan="4">
+      <div class="button joinChat" (click)="joinChat(chatId.value, nickname.value)">Join Chat</div>
+    </td>
+    <td colspan="4">
+      <div class="button leaveChat" (click)="leaveChat()">Leave Chat</div>
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan="10">
       <div #messagesContainer class="messagesContainer">
         <div *ngFor="let event of events">
           <div *ngIf="event.type == 'MESSAGE'">
@@ -50,10 +78,12 @@
           </div>
         </div>
       </div>
+    </td>
+    <td colspan="2">
       <div #membersContainer class="membersContainer">
-        <div style="margin: 10px 0px 0px 10px;">Chat Members:</div>
+        <div class="chatMembersHeader">Chat Members:</div>
         <hr/>
-        <div *ngFor="let event of events" style="margin: 10px 0px 0px 10px;">
+        <div *ngFor="let event of events" class="chatMemberContainer">
           <div *ngIf="event.type == 'MEMBER' && didNotLeave(event.payload.id)">
             {{event.payload.nickname}}
           </div>
@@ -61,9 +91,13 @@
       </div>
     </td>
   </tr>
-  <tr class="trCompose">
-    <td>
+
+  <tr>
+    <td colspan="9">
       <textarea #txtCompose class="txtCompose" name="txtCompose" (keydown.enter)="preventDefault($event)" (keyup.enter)="sendMessage(txtCompose.value)"></textarea>
+    </td>
+    <td colspan="3">
+      <div class="button sendMessage" (click)="sendMessage(txtCompose.value)">Send</div>
     </td>
   </tr>
 </table>
