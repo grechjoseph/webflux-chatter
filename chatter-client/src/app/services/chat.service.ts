@@ -8,11 +8,13 @@ import { PostMessageRequest } from '../models/post-message-request.model';
 @Injectable()
 export class ChatService {
 
+  baseUrl: string = 'http://localhost:8080';
+
   constructor() { }
 
   public startOrJoinChat(_chatId: string, _nickname: string) : Observable<any> {
       return new Observable((observer) => {
-            let url = 'http://localhost:8080/start';
+            let url = this.baseUrl + '/start';
             let requestBody = new StartOrJoinRequest(_chatId, _nickname);
             let requestHeaders = {
               'Content-Type': 'application/json',
@@ -36,7 +38,7 @@ export class ChatService {
 
   public leaveChat(_chatId: string, _memberId: string): Observable<any> {
     return new Observable((observer) => {
-                let url = 'http://localhost:8080/chats/' + _chatId + '/members/' + _memberId;
+                let url = this.baseUrl + '/chats/' + _chatId + '/members/' + _memberId;
                 let requestHeaders = {
                   'Content-Type': 'application/json'
                 };
@@ -57,7 +59,7 @@ export class ChatService {
 
   public subscribeToChat(_chatId: string): Observable<any> {
       return new Observable((observer) => {
-            let url = 'http://localhost:8080/chats/' + _chatId + '/subscribe';
+            let url = this.baseUrl + '/chats/' + _chatId + '/subscribe';
             let requestHeaders = {
               'Content-Type': 'application/json'
             };
@@ -77,7 +79,7 @@ export class ChatService {
     }
 
     public sendMessage(_chatId: string, _memberId: string, _message: string) {
-      let url = 'http://localhost:8080/chats/' + _chatId;
+      let url = this.baseUrl + '/chats/' + _chatId;
       let requestBody = new PostMessageRequest(_chatId, _memberId, _message);
       let requestHeaders = {
         'Content-Type': 'application/json'

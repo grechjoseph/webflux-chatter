@@ -66,6 +66,25 @@ export class AppComponent implements OnInit {
     this.events = [];
   }
 
+  /** Utils **/
+
+  public getNicknameByMemberId(_memberId): string {
+    return this.events.find(event => event.type === 'MEMBER' && event.payload.id === _memberId).payload.nickname;
+  }
+
+  public didNotLeave(userId: string) {
+    return this.events.find(event => event.type === 'LEFT_CHAT' && event.payload.id === userId) == null;
+  }
+
+  public formatDateTime(_dateTime): string {
+    let date = new Date(_dateTime);
+    return this.datePipe.transform(date,"dd-MM-yyyy HH:mm");
+  }
+
+  public parseMessage(_message: string): string {
+    return _message;
+  }
+
   /** UX **/
 
   public preventDefault(event){
@@ -78,29 +97,10 @@ export class AppComponent implements OnInit {
       this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight
   }
 
-  public didNotLeave(userId: string) {
-    return this.events.find(event => event.type === 'LEFT_CHAT' && event.payload.id === userId) == null;
-  }
-
   public copyToClipboard(inputElement) {
     inputElement.select();
     document.execCommand('copy');
     inputElement.setSelectionRange(0, 0);
-  }
-
-  /** Utils **/
-
-  public getNicknameByMemberId(_memberId): string {
-    return this.events.find(event => event.type === 'MEMBER' && event.payload.id === _memberId).payload.nickname;
-  }
-
-  public formatDateTime(_dateTime): string {
-    let date = new Date(_dateTime);
-    return this.datePipe.transform(date,"dd-MM-yyyy HH:mm");
-  }
-
-  public parseMessage(_message: string): string {
-    return _message;
   }
 
 }
