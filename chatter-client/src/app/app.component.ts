@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
   /** Server Access **/
 
   public startOrJoinChat(_chatId: string, _nickname: string) {
+    this.leaveChat();
     this.resetFields();
     this.chatService.startOrJoinChat(_chatId, _nickname)
       .subscribe(chatInfo => {
@@ -79,6 +80,12 @@ export class AppComponent implements OnInit {
 
   public didNotLeave(userId: string) {
     return this.events.find(event => event.type === 'LEFT_CHAT' && event.payload.id === userId) == null;
+  }
+
+  public copyToClipboard(inputElement) {
+    inputElement.select();
+    document.execCommand('copy');
+    inputElement.setSelectionRange(0, 0);
   }
 
   /** Utils **/

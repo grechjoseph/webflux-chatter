@@ -6,6 +6,7 @@
     <tr>
       ChatId:
       <input #txtChatId type="text" value="{{chatId}}" class="txt" />
+      <button (click)="copyToClipboard(txtChatId)" value="Copy" >Copy</button>
     </tr>
   </ng-container>
   <tr class="trMenu">

@@ -24,7 +24,7 @@ public class ChatController {
 
     private final Set<ChatDto> chats = new HashSet<>();
 
-    @PostMapping(value = "/start", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/start")
     public ResponseEntity<StartOrJoinChatResponseDto> startChat(@RequestBody final StartChatRequest request) {
         final UserDto user = UserDto.builder()
                 .nickname(request.getNickname())
