@@ -22,12 +22,12 @@
 
   <tr>
     <td colspan="12">
-      <input type="text" #nickname class="nickname" placeholder="Nickname"/>
+      <input type="text" #nickname class="nickname" placeholder="Nickname" (keydown.enter)="preventDefault($event)" (keyup.enter)="startChat(nickname.value)"/>
     </td>
   </tr>
   <tr>
     <td colspan="10">
-      <input type="text" #chatId class="chatId" placeholder="Chat ID (for joining)" value="{{formatChatId()}}"/>
+      <input type="text" #chatId class="chatId" placeholder="Chat ID (for joining)" value="{{formatChatId()}}" (keydown.enter)="preventDefault($event)" (keyup.enter)="joinChat(chatId.value, nickname.value)"/>
     </td>
     <td colspan="2">
       <button (click)="copyToClipboard(chatId)" value="Copy" class="copyChatId">Copy</button>
