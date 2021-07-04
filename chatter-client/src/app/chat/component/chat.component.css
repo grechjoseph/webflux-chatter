@@ -1,0 +1,96 @@
+h1, div, input, textarea, table {
+  font-family: "Arial";
+}
+
+table {
+  width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #D3D3D3;
+  padding: 5px;
+}
+
+td {
+  padding: 5px;
+}
+
+.txt {
+  width: 300px;
+}
+
+.messagesContainer {
+  width: 824px;
+  height: 512px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #F5F5F5;
+  overflow-y: scroll;
+  float: left;
+}
+
+.membersContainer {
+  width: 200px;
+  height: 512px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #F5F5F5;
+  overflow-y: scroll;
+  float: right;
+}
+
+.txtCompose {
+  width: 1024px;
+  height: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  resize: none;
+}
+
+.messageContainer {
+  width: 40%;
+  margin: 5px;
+  padding: 5px 10px 5px 10px;
+  border-radius: 10px;
+}
+
+.messageContainer.left {
+  background-color: #81d2c7;
+}
+
+.messageContainer.right {
+  background-color: #97CDFF;
+  margin-left: auto;
+  text-align: right;
+}
+
+.sender {
+  font-size: 15px;
+  color: grey;
+  text-align: right;
+}
+
+.message {
+  padding: 10px 5px 10px 5px;
+}
+
+.datetime {
+  font-size: 11px;
+  color: grey;
+  text-align: right;
+}
+
+.memberJoinedContainer {
+  width: 100%;
+  text-align: center;
+  margin: 15px 0px 15px 0px;
+}
+
+.memberJoinedContainer>.memberNickname {
+  font-size: 15px;
+  color: grey;
+}
+
+.memberJoinedContainer>.memberJoinDate {
+  font-size: 11px;
+  color: grey;
+}

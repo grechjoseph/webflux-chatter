@@ -5,11 +5,13 @@ import {DatePipe} from '@angular/common';
 
 import { AppComponent } from './app.component';
 
-import { ChatService } from './services/chat.service';
+import { ChatService } from './chat/service/chat.service';
+import { ChatComponent } from './chat/component/chat.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule
